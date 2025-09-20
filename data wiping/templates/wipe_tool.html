@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Wipe Tool - Zero Leaks{% endblock %}
+{% block content %}
+    <h1>Zero Leaks - Data Wiper</h1>
+    <form id="wipe-form">
+        <div class="form-group">
+            <label>Target Type:</label>
+            <div style="display: flex; gap: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="wipe_type" value="file" checked> File</label>
+                <label><input type="radio" name="wipe_type" value="folder"> Folder</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="path-display">Target Path:</label>
+            <div style="display: flex;">
+                <input type="text" id="path-display" placeholder="Click Browse to select..." readonly required style="flex-grow: 1; border-top-right-radius: 0; border-bottom-right-radius: 0;">
+                <button type="button" id="browse-btn" style="border-top-left-radius: 0; border-bottom-left-radius: 0; width: auto; padding: 10px 15px;">Browse...</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="wipe-method">Wiping Method:</label>
+            <select id="wipe-method" name="wipe_method" style="width: 100%; padding: 10px; background-color: #343a40; border: 1px solid #6c757d; border-radius: 4px; color: #f8f9fa;">
+                <option value="--clear">Clear (1 Pass Zeros - NIST 800-88)</option>
+                <option value="--purge" selected>Purge (3 Pass Overwrite - DoD 5220.22-M)</option>
+                <option value="--destroy-sw">Destroy (7 Pass Overwrite - Software-Based)</option>
+            </select>
+        </div>
+        <button type="submit" style="width: 100%;">Start Wipe</button>
+    </form>
+    <div id="status-bar" class="status-bar" style="width: 100%; padding: 10px; margin-top: 15px; border-radius: 4px; text-align: center; font-weight: 700; display: none; box-sizing: border-box;"></div>
+    <div style="margin-top: 25px;">
+        <label>Log Output:</label>
+        <pre id="log-output" style="width: 100%; height: 200px; background-color: #212529; color: #00ff41; font-family: 'Inconsolata', monospace; padding: 15px; border: 1px solid #6c757d; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; box-sizing: border-box; overflow-y: auto;">Awaiting command...</pre>
+    </div>
+
+    <div id="file-browser-modal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+        <div class="modal-content" style="background-color: #495057; margin: auto; padding: 20px; border: 1px solid #6c757d; width: 80%; max-width: 700px; border-radius: 8px; color: #f8f9fa;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="modal-path">File Browser</h2>
+                <button type="button" id="select-folder-btn" style="display:none; background-color: #00aaff;">Select This Folder</button>
+                <span class="close-button" style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+            <div id="file-browser" style="height: 400px; overflow-y: auto; background: #343a40; padding: 10px; margin-top: 10px;"></div>
+        </div>
+    </div>
+    
+    <script>
+        // All your previous JavaScript for the file browser and form submission goes here.
+        // It does not need to be changed. Just ensure it's inside the script tag.
+        const wipeForm = document.getElementById('wipe-form');
+        const statusBar = document.getElementById('status-bar');
+        const logOutput = document.getElementById('log-output');
+        const pathDisplay = document.getElementById('path-display');
+        const modal = document.getElementById('file-browser-modal');
+        const browseBtn = document.getElementById('browse-btn');
+        const closeBtn = document.querySelector('.close-button');
+        const fileBrowser = document.getElementById('file-browser');
+        const modalPath = document.getElementById('modal-path');
+        const selectFolderBtn = document.getElementById('select-folder-btn');
+        let currentPathInModal = '';
+        const getWipeType = () => document.querySelector('input[name="wipe_type"]:checked').value;
+        const openModal = () => { modal.style.display = 'flex'; loadDirectory(); };
+        const closeModal = () => { modal.style.display = 'none'; };
+        browseBtn.onclick = openModal;
+        closeBtn.onclick = closeModal;
+        window.onclick = (event) => { if (event.target == modal) closeModal(); };
+        document.querySelectorAll('input[name="wipe_type"]').forEach(radio => {
+            radio.addEventListener('change', () => pathDisplay.value = '');
+        });
+        selectFolderBtn.onclick = () => {
+            pathDisplay.value = currentPathInModal;
+            closeModal();
+        };
+        async function loadDirectory(path = '') {
+            const wipeType = getWipeType();
+            selectFolderBtn.style.display = (wipeType === 'folder' && path) ? 'block' : 'none';
+            const response = await fetch(`/browse?path=${encodeURIComponent(path)}`);
+            const data = await response.json();
+            fileBrowser.innerHTML = '';
+            currentPathInModal = data.current_path;
+            modalPath.textContent = data.current_path || 'Select a Drive';
+            const ul = document.createElement('ul');
+            if (data.parent_path !== undefined) {
+                const li = document.createElement('li');
+                li.innerHTML = '⬆️ .. (Up)';
+                li.onclick = () => loadDirectory(data.parent_path);
+                ul.appendChild(li);
+            }
+            data.folders.forEach(folder => {
+                const li = document.createElement('li');
+                li.innerHTML = `📁 ${folder}`;
+                const newPath = data.current_path ? `${data.current_path}\\${folder}` : folder;
+                li.onclick = () => loadDirectory(newPath);
+                ul.appendChild(li);
+            });
+            if (wipeType === 'file') {
+                data.files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `📄 ${file}`;
+                    li.onclick = () => {
+                        pathDisplay.value = `${data.current_path}\\${file}`;
+                        closeModal();
+                    };
+                    ul.appendChild(li);
+                });
+            }
+            fileBrowser.appendChild(ul);
+        }
+        wipeForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const wipeType = getWipeType();
+            const path = pathDisplay.value;
+            const wipeMethod = document.getElementById('wipe-method').value;
+            if (!path) { alert('Please select a target to wipe.'); return; }
+            if (wipeType === 'folder') {
+                if (!confirm(`DANGER!\n\nYou are about to permanently delete the folder "${path}" and ALL its contents.\n\nThis action cannot be undone. Are you absolutely sure?`)) {
+                    return;
+                }
+            }
+            logOutput.textContent = 'Wiping in progress...';
+            statusBar.style.display = 'block';
+            statusBar.textContent = 'Data wipe initiated...';
+            statusBar.className = 'status-bar status-success';
+            try {
+                const response = await fetch('/wipe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wipe_type: wipeType, path: path, wipe_method: wipeMethod }),
+                });
+                const result = await response.json();
+                logOutput.textContent = result.log || result.stderr || "No output received.";
+                if (result.success) {
+                    statusBar.textContent = 'Wipe completed successfully.';
+                    statusBar.className = 'status-bar status-success';
+                } else {
+                    statusBar.textContent = 'Wipe failed. Check logs.';
+                    statusBar.className = 'status-bar status-error';
+                }
+            } catch (error) {
+                statusBar.textContent = 'An error occurred.';
+                statusBar.className = 'status-bar status-error';
+                logOutput.textContent = `Error: ${error}`;
+            }
+        });
+    </script>
+{% endblock %}
