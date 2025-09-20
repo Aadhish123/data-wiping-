@@ -1,0 +1,39 @@
+{
+  "schema": "org.trustwipe.cert.v1",
+  "device": {
+    "class": "demo-file",
+    "serial_hash": "sha256$824d673dca480d728710fb992ec89efdac2886612f413e8188b7fa87395d07c8",
+    "capacity_bytes": 4096
+  },
+  "wipe": {
+    "action": "purge",
+    "method": "demo_overwrite",
+    "started_at": "2025-09-19T12:30:20.259117Z",
+    "finished_at": "2025-09-19T12:30:20.280724Z",
+    "result": "success"
+  },
+  "evidence": {
+    "samples": [
+      {
+        "offset": 0,
+        "hash": "sha256$cf8c32007e8d69e90170e33df5f251c7d18df1de66c0b228339f7b0fb6cbe278"
+      },
+      {
+        "offset": 2048,
+        "hash": "sha256$6c0c6dfa023c62c69ac7b98958120fbb1869047c8320fd9564a4150ce5f7022b"
+      },
+      {
+        "offset": 3584,
+        "hash": "sha256$66fefb4ab67bf9da7cbb9ff1468ed6d01fcaf8cf54552515b1463308816669c7"
+      }
+    ]
+  },
+  "meta": {
+    "tool_version": "trustwipe-openssl-demo-0.1"
+  },
+  "sign": {
+    "alg": "rsa-sha256",
+    "sig": "jJe+wYkf7Ii7LaWxhiD+BqHdL0AAJXOqEqenzpE7zwUyDwTMqdsUlefxiqsLKwPgXDE7E9r5YQXpL3uorw46+/8qBMms6VpzM+eo72S3W5oiNbvOmXb1Yw0ph8VNC8W2ph5iaPMk/cJm1DWvbg5NEmes68jpJlMQdUxLhxoon8EKNP7QTAQM6hjwA82yzxGubXxCz6p2HWJY0A7H8Xq1oKlHdzgEUUEfd4WeXF9e9PC4f5NOMSYDFFPIDhwliZ5q723NKPqjm1cFL9x9HYXCndXswY1R+vPaj3MOTgV/hR1gDyZjHdMmjw0YC80d/eSvaYRYa4tNOFbJbMMxOjrE5g==",
+    "pubkey_id": "trustwipe-openssl-1"
+  }
+}
