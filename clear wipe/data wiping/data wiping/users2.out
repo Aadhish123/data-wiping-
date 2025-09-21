@@ -1,0 +1,117 @@
+
+ Ansys Mechanical Enterprise                       
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2025 R1          LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright 1971-2025 Ansys, Inc.  All rights reserved.       *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2025 R1 
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2025 R1.128  
+ Ansys Dynamic Reporting 2025 R1.128 
+ Core WB Files 2025 R1.128   
+ CFX (includes CFD-Post) 2025 R1.128 
+ Chemkin 2025 R1.128 
+ EnSight 2025 R1.128 
+ FENSAP-ICE 2025 R1.128  
+ Fluent (includes CFD-Post) 2025 R1.128  
+ Polyflow (includes CFD-Post) 2025 R1.128
+ Forte (includes EnSight) 2025 R1.128
+ Rocky 2025 R1.128   
+ TurboGrid 2025 R1.128   
+ ACIS Geometry Interface 2025 R1.128 
+ AutoCAD Geometry Interface 2025 R1.128  
+ Catia, Version 4 Geometry Interface 2025 R1.128 
+ Catia, Version 5 Geometry Interface 2025 R1.128 
+ Catia, Version 6 Geometry Interface 2025 R1.128 
+ Creo Elements/Direct Modeling Geometry Interface 2025 R1.128
+ Creo Parametric Geometry Interface 2025 R1.128  
+ Inventor Geometry Interface 2025 R1.128 
+ JTOpen Geometry Interface 2025 R1.128   
+ NX Geometry Interface 2025 R1.128   
+ Parasolid Geometry Interface  2025 R1.128   
+ Solid Edge Geometry Interface 2025 R1.128   
+ SOLIDWORKS Geometry Interface 2025 R1.128   
+ Speos 2025 R1.128   
+ SpaceClaim 2025 R1.128  
+ Speos RPC 2025 R1.128   
+ Aqwa 2025 R1.128
+ Autodyn 2025 R1.128 
+ Material Calibration App 2025 R1.128
+ Mechanical Products 2025 R1.128 
+ Motion 2025 R1.128  
+ Academic Student 2025 R1.128
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  INITIAL JOBNAME              = users                                                                                                                                                                                                                                                   
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+       4 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF     4 CORES REQUESTED
+  MPI OPTION                   = INTELMPI
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+  MODEL FILE NAME              = C:\Users\haris\OneDrive\Desktop\clear wipe\data wiping\data wiping\users.db                                                                                                                                                                                         
+  GRAPHICS DEVICE REQUESTED    = win32   
+  GRAPHICAL ENTRY              = YES   
+  LANGUAGE                     = en-us               
+  INITIAL DIRECTORY = C:\Users\haris\OneDrive\Desktop\clear wipe\data wiping\data wiping
+
+ RELEASE= 2025 R1              BUILD= 25.1      UP20241202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=users2  00:15:06  SEP 22, 2025 CP=      0.734
+
