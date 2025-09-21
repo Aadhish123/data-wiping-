@@ -3,10 +3,10 @@
 {% block content %}
     <h1>Two-Factor Authentication</h1>
     <p class="text-center">
-        To complete your login, please enter the OTP.
+        To complete your login, please enter the OTP sent to your device.
     </p>
     <div class="alert alert-info">
-        <strong>For this project, the OTP was printed to the server console window.</strong>
+        <strong>Note:</strong> If SMS is not configured or fails, the OTP will be printed to the server console window as a backup.
     </div>
     <form method="post">
         <div class="form-group">
@@ -16,6 +16,6 @@
         <button type="submit">Verify</button>
     </form>
     <p class="text-center mt-3">
-        Didn't see the OTP? <a href="{{ url_for('send_otp') }}">Resend OTP</a>
+        Didn't receive the OTP? <a href="{{ url_for('send_otp') }}">Resend OTP</a>
     </p>
 {% endblock %}
