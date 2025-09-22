@@ -4,20 +4,22 @@
 #include <stdlib.h>
 #include <time.h>
 #include <process.h> // For multi-threading
-#include <winioctl.h> // For disk info
+#include <ddk/ntdddisk.h>
 
 #define BUFFER_SIZE 1048576 // 1MB buffer for performance
 #define MAX_THREADS 16      // Max number of concurrent threads
 
-// --- Structs & Forward Declarations ---
-typedef struct { char filepath[MAX_PATH]; char method[20]; } WipeFileInfo;
+// --- Structs for Multi-threading ---
+typedef struct {
+    char filepath[MAX_PATH];
+    char method[20];
+} WipeFileInfo;
+
+// --- Forward Declarations ---
 int wipe_file(const char *filepath, const char *method, int is_part_of_folder);
 unsigned __stdcall wipe_file_thread(void *data);
-void print_disk_info(HANDLE hDevice);
-void file_overwrite_pass(FILE *f, long long file_size, int pass_num, int total_passes, char pattern);
-void disk_overwrite_pass(HANDLE hDevice, unsigned __int64 disk_size, int pass_num, int total_passes, char pattern);
 
-// --- (file_overwrite_pass and disk_overwrite_pass are unchanged from the high-speed version) ---
+// --- Overwrite Pass Functions ---
 void file_overwrite_pass(FILE *f, long long file_size, int pass_num, int total_passes, char pattern) {
     rewind(f);
     char *buffer = (char*)malloc(BUFFER_SIZE);
@@ -79,7 +81,7 @@ void disk_overwrite_pass(HANDLE hDevice, unsigned __int64 disk_size, int pass_nu
     free(buffer);
 }
 
-// --- (wipe_folder_recursive, wipe_file_thread, wipe_file are unchanged) ---
+// --- Multi-threaded Folder Wiping ---
 int wipe_folder_recursive(const char *basePath, const char *method) {
     WIN32_FIND_DATA findFileData;
     char searchPath[MAX_PATH];
@@ -138,7 +140,7 @@ unsigned __stdcall wipe_file_thread(void *data) {
 
 int wipe_file(const char *filepath, const char *method, int is_part_of_folder) {
     if (!is_part_of_folder) {
-        printf("Zero Leaks Wiping Engine v0.8\n------------------------------------\nTarget: %s\n------------------------------------\n", filepath);
+        printf("Zero Leaks Wiping Engine v0.7\n------------------------------------\nTarget: %s\n------------------------------------\n", filepath);
     } else {
         printf("[File] Wiping: %s\n", filepath);
     }
@@ -172,35 +174,15 @@ int wipe_file(const char *filepath, const char *method, int is_part_of_folder) {
     return 0;
 }
 
-
-void print_disk_info(HANDLE hDevice) {
-    STORAGE_PROPERTY_QUERY query;
-    ZeroMemory(&query, sizeof(query));
-    query.PropertyId = StorageDeviceProperty;
-    query.QueryType = PropertyStandardQuery;
-
-    STORAGE_DEVICE_DESCRIPTOR* desc;
-    DWORD bytesReturned;
-    char buffer[1024] = {0}; // Initialize buffer to zeros
-    desc = (STORAGE_DEVICE_DESCRIPTOR*)buffer;
-
-    if (DeviceIoControl(hDevice, IOCTL_STORAGE_QUERY_PROPERTY, &query, sizeof(query), buffer, 1024, &bytesReturned, NULL)) {
-        if (desc->VendorIdOffset > 0 && desc->VendorIdOffset < 1024) printf("  Vendor: %s\n", (char*)buffer + desc->VendorIdOffset);
-        if (desc->ProductIdOffset > 0 && desc->ProductIdOffset < 1024) printf("  Model: %s\n", (char*)buffer + desc->ProductIdOffset);
-        if (desc->SerialNumberOffset > 0 && desc->SerialNumberOffset < 1024) printf("  Serial Number: %s\n", (char*)buffer + desc->SerialNumberOffset);
-    }
-}
-
 int wipe_disk_raw(const char* disk_path, const char* method) {
-    printf("Zero Leaks Wiping Engine v0.8\n------------------------------------\nTarget Disk: %s\n------------------------------------\n", disk_path);
-    
-    HANDLE hDevice = CreateFileA(disk_path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+    printf("Zero Leaks Wiping Engine v0.7\n------------------------------------\nTarget Disk: %s\n------------------------------------\n", disk_path);
+    printf("WARNING: This will destroy all data, partitions, and the OS on this disk.\n");
+
+    HANDLE hDevice = CreateFileA(disk_path, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
     if (hDevice == INVALID_HANDLE_VALUE) {
         fprintf(stderr, "ERROR: Could not open disk handle. Ensure you are running as Administrator. LastError=%lu\n", GetLastError());
         return 1;
     }
-
-    print_disk_info(hDevice);
     
     GET_LENGTH_INFORMATION sizeInfo;
     DWORD bytesReturned;
@@ -211,8 +193,7 @@ int wipe_disk_raw(const char* disk_path, const char* method) {
     }
     
     unsigned __int64 disk_size = sizeInfo.Length.QuadPart;
-    printf("  Disk Size: %.2f GB\n", (double)disk_size / (1024 * 1024 * 1024));
-    printf("------------------------------------\n");
+    printf("Disk size: %.2f GB\n", (double)disk_size / (1024 * 1024 * 1024));
 
     if (strcmp(method, "--clear") == 0) { disk_overwrite_pass(hDevice, disk_size, 1, 1, 0x00); } 
     else if (strcmp(method, "--purge") == 0) { disk_overwrite_pass(hDevice, disk_size, 1, 3, 0x00); disk_overwrite_pass(hDevice, disk_size, 2, 3, 0xFF); disk_overwrite_pass(hDevice, disk_size, 3, 3, 'R'); } 
@@ -233,7 +214,7 @@ int main(int argc, char *argv[]) {
     char *method = argv[3];
     srand((unsigned int)time(NULL));
     if (strcmp(type, "--file") == 0) { return wipe_file(path, method, 0); } 
-    else if (strcmp(type, "--folder") == 0) { printf("Zero Leaks Wiping Engine v0.8\n------------------------------------\nTarget Folder: %s\n------------------------------------\n", path); return wipe_folder_recursive(path, method); } 
+    else if (strcmp(type, "--folder") == 0) { printf("Zero Leaks Wiping Engine v0.7\n------------------------------------\nTarget Folder: %s\n------------------------------------\n", path); return wipe_folder_recursive(path, method); } 
     else if (strcmp(type, "--disk") == 0) { return wipe_disk_raw(path, method); } 
     else { fprintf(stderr, "ERROR: Invalid type specified. Use --file, --folder, or --disk.\n"); return 1; }
     return 0;
